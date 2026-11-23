@@ -91,6 +91,9 @@ _Step 3:_
 evaluate.py
 
 _Output:_
+==================
+Test Accuracy
+==================
 Test Accuracy: 7.07%
 Loss: 5.6777
 
