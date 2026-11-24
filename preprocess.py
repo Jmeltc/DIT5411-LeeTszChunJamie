@@ -64,14 +64,10 @@ for filename in os.listdir(SOURCE_DIR):
 
 for filename in os.listdir(SOURCE_DIR):
 
-    if filename.lower().endswith(
-        (".png", ".jpg", ".jpeg", ".bmp")
-    ):
-
+    if filename.lower().endswith((".png")):
         try:
             word = filename.split("_")[0]
             characters[word].append(filename)
-
         except Exception:
             print(f"Skipped: {filename}")
 
@@ -84,36 +80,19 @@ total_test = 0
 for word, files in characters.items():
 
     # Sort according to image number
-    files.sort(
-        key=lambda x: int(
-            os.path.splitext(x)[0].split("_")[1]
-        )
-    )
-
+    files.sort(key=lambda x: int(os.path.splitext(x)[0].split("_")[1]))
     total_images = len(files)
-
-
     train_count = math.floor(total_images * 0.8)
-
-
     train_count = min(train_count, 40)
-
-
     if train_count >= total_images:
         train_count = total_images - 1
-
     if train_count <= 0:
         continue
-
     test_count = total_images - train_count
-
-
     train_class_dir = os.path.join(TRAIN_DIR, word)
     test_class_dir = os.path.join(TEST_DIR, word)
-
     os.makedirs(train_class_dir, exist_ok=True)
     os.makedirs(test_class_dir, exist_ok=True)
-
     train_files = files[:train_count]
     test_files = files[train_count:]
 
@@ -125,24 +104,34 @@ for word, files in characters.items():
 
         shutil.copy2(src, dst)
 
+    # Generate augmented images
+    current_train_images = train_files.copy()
+    target_size = 200
+    augment_count = 0
+    while len(current_train_images) < target_size:
+        source_file = random.choice(train_files)
+        src = os.path.join(SOURCE_DIR, source_file)
+        image = cv2.imread(src,cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            continue
+        augmented = augment_image(image)
+        new_filename = (f"aug_{augment_count}_"f"{source_file}")
+        save_path = os.path.join(train_class_dir,new_filename)
+        cv2.imwrite(save_path,augmented)
+        current_train_images.append(new_filename)
+        augment_count += 1
+    
     # Copy testing images
     for file in test_files:
-
         src = os.path.join(SOURCE_DIR, file)
         dst = os.path.join(test_class_dir, file)
-
         shutil.copy2(src, dst)
 
     total_classes += 1
     total_train += len(train_files)
     total_test += len(test_files)
 
-    print(
-        f"{word}: "
-        f"Total={total_images}, "
-        f"Train={len(train_files)}, "
-        f"Test={len(test_files)}"
-    )
+    print(f"{word}: "f"Total={total_images}, "f"Train={len(train_files)}, "f"Test={len(test_files)}")
 
 print("\n========== SUMMARY ==========")
 print(f"Total image files: {count}")
