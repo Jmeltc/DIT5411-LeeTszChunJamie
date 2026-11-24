@@ -1,4 +1,6 @@
 # DIT5411-LeeTszChunJamie
+Due to the limitation of the Github file size, full version will be on One Drive
+Link: https://vtcmca-my.sharepoint.com/:f:/g/personal/250586895_stu_vtc_edu_hk/IgB-BLr2y4mTS5gMt_aAJv1oAdpQW4O1njb-a7yvTQyehvY?e=stavF1
 
 **Overview**
 
