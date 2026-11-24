@@ -35,7 +35,6 @@ def augment_image(image):
     image = cv2.resize(image,(scaled_w, scaled_h))
     image = cv2.resize(image,(width, height))
 
-
     # 3. Translation
     tx = random.randint(-5, 5)
     ty = random.randint(-5, 5)
@@ -110,14 +109,17 @@ for word, files in characters.items():
     augment_count = 0
     while len(current_train_images) < target_size:
         source_file = random.choice(train_files)
-        src = os.path.join(SOURCE_DIR, source_file)
-        image = cv2.imread(src,cv2.IMREAD_GRAYSCALE)
+        if not os.path.exists(src):
+            continue
+        src = os.path.join(SOURCE_DIR, file)
+        image = cv2.imdecode(np.fromfile(src, dtype=np.uint8),cv2.IMREAD_GRAYSCALE)
         if image is None:
             continue
         augmented = augment_image(image)
         new_filename = (f"aug_{augment_count}_"f"{source_file}")
         save_path = os.path.join(train_class_dir,new_filename)
-        cv2.imwrite(save_path,augmented)
+        _, encoded = cv2.imencode(".png", augmented)
+        encoded.tofile(save_path)
         current_train_images.append(new_filename)
         augment_count += 1
     
