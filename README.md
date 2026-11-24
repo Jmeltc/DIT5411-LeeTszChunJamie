@@ -30,6 +30,40 @@ For each character:
 Maximum 40 training images per character
 At least 1 testing image is reserved for evaluation
 
+**Data Argumentation**
+Since the original dataset contains a limited number of samples for each character, image augmentation was applied to increase training data diversity.
+During data augmentation, a random augmentation strategy was adopted. For each generated training image, one or two augmentation techniques were randomly selected from rotation (±15°), scaling (90%-110%), translation (±5 pixels), contrast adjustment, and Gaussian noise injection. This approach increases training diversity while preserving the original characteristics of handwritten Chinese characters.
+
+Augmentation Techniques
+_1. Rotation_
+Random image rotations within ±15 degrees.
+Purpose:
+Simulate different handwriting angles.
+Improve robustness against tilted writing.
+
+_2. Scaling_
+Random zooming between 90% and 110%.
+Purpose:
+Handle different writing sizes.
+
+_3. Translation_
+Random horizontal and vertical movement.
+Purpose:
+Simulate various writing positions.
+
+_4. Contrast Adjustment_
+Random contrast modification.
+Purpose:
+Improve performance under different scanning conditions.
+
+_5. Noise Injection_
+Small Gaussian noise added to images.
+Purpose:
+Reduce overfitting.
+Improve generalization.
+
+Using augmentation, each character class was expanded to approximately 200 training samples.
+
 **Directory**
 DIT5411-LeeTszChunJamie/
   .idea/
