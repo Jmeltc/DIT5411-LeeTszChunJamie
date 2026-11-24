@@ -2,6 +2,9 @@ import os
 import shutil
 from collections import defaultdict
 import math
+import cv2
+import numpy as np
+import random
 
 SOURCE_DIR = "data_raw"
 TRAIN_DIR = "dataset/train"
@@ -14,6 +17,41 @@ os.makedirs(TEST_DIR, exist_ok=True)
 files = os.listdir(SOURCE_DIR)
 
 print("Total files:", len(files))
+
+#Data Argumentation
+def augment_image(image):
+
+    height, width = image.shape[:2]
+
+    # 1. Rotation (-15° to +15°)
+    angle = random.uniform(-15, 15)
+    M = cv2.getRotationMatrix2D((width / 2, height / 2),angle,1.0)
+    image = cv2.warpAffine(image,M,(width, height),borderMode=cv2.BORDER_REPLICATE)
+
+    # 2. Scaling (90% - 110%)
+    scale = random.uniform(0.9, 1.1)
+    scaled_w = int(width * scale)
+    scaled_h = int(height * scale)
+    image = cv2.resize(image,(scaled_w, scaled_h))
+    image = cv2.resize(image,(width, height))
+
+
+    # 3. Translation
+    tx = random.randint(-5, 5)
+    ty = random.randint(-5, 5)
+    M = np.float32([[1, 0, tx],[0, 1, ty]])
+    image = cv2.warpAffine(image,M,(width, height),borderMode=cv2.BORDER_REPLICATE)
+
+    # 4. Contrast Adjustment
+    alpha = random.uniform(0.8, 1.2)
+    beta = random.randint(-10, 10)
+    image = cv2.convertScaleAbs(image,alpha=alpha,beta=beta)
+
+    # 5. Gaussian Noise
+    noise = np.random.normal(0,8,image.shape)
+    image = image.astype(np.float32) + noise
+    image = np.clip(image,0,255).astype(np.uint8)
+    return image
 
 # Group images by character
 characters = defaultdict(list)
